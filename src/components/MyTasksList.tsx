@@ -1,10 +1,14 @@
 import React from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet, FlatListProps } from 'react-native';
 
-function FlatListHeaderComponent() {
+interface ThemesProps {
+  themes: boolean;
+}
+
+function FlatListHeaderComponent({ themes }: ThemesProps) {
   return (
     <View>
-      <Text style={styles.header}>Minhas tasks</Text>
+      <Text style={[styles.header, themes ? dark.header : styles.header]}>Minhas tasks</Text>
     </View>
   )
 }
@@ -17,9 +21,10 @@ interface MyTasksListProps {
   }[];
   onPress: (id: number) => void;
   onLongPress: (id: number) => void;
+  themes: boolean;
 }
 
-export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
+export function MyTasksList({ tasks, onLongPress, onPress, themes }: MyTasksListProps) {
   return (
     <FlatList
       data={tasks}
@@ -31,21 +36,30 @@ export function MyTasksList({ tasks, onLongPress, onPress }: MyTasksListProps) {
             activeOpacity={0.7}
             onPress={() => onPress(item.id)}
             onLongPress={() => onLongPress(item.id)}
-            style={item.done ? styles.taskButtonDone : styles.taskButton}
+            style={[
+              item.done ? styles.taskButtonDone : styles.taskButton, 
+              themes && item.done ? dark.taskButtonDone : ( themes ? dark.taskButton : styles.taskButton )
+            ]}
           >
             <View 
               testID={`marker-${index}`}
-              style={item.done ? styles.taskMarkerDone : styles.taskMarker}
+              style={[
+                item.done ? styles.taskMarkerDone : styles.taskMarker, 
+                themes && item.done ? dark.taskMarkerDone : ( themes ? dark.taskMarker : styles.taskMarker )
+              ]}
             />
             <Text 
-              style={item.done ? styles.taskTextDone : styles.taskText}
+              style={[
+                item.done ? styles.taskTextDone : styles.taskText, 
+                themes && item.done ? dark.taskTextDone : ( themes ? dark.taskText : styles.taskText )
+              ]}
             >
               {item.title}
             </Text>
           </TouchableOpacity>
         )
       }}
-      ListHeaderComponent={<FlatListHeaderComponent />}
+      ListHeaderComponent={<FlatListHeaderComponent themes={themes} />}
       ListHeaderComponentStyle={{
         marginBottom: 20
       }}
@@ -103,5 +117,29 @@ const styles = StyleSheet.create({
   taskTextDone: {
     color: '#A09CB1',
     textDecorationLine: 'line-through'
+  }
+})
+
+const dark = StyleSheet.create({
+  header: {
+    color: '#fff',
+  },
+  taskButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+  },
+  taskMarker: {
+    borderColor: '#fff',
+  },
+  taskText: {
+    color: '#fff',
+  },
+  taskButtonDone: {
+    backgroundColor: 'rgba(65, 58, 111, 0.5)',
+  },
+  taskMarkerDone: {
+    backgroundColor: '#9347CA',
+  },
+  taskTextDone: {
+    color: '#fff',
   }
 })
